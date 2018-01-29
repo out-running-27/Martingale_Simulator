@@ -6,6 +6,11 @@
 
 import random
 
+# standard US roulette wheel
+WHEEL = {
+        "red": [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36],
+        "black": [2, 4, 6, 8, 10, 11, 13, 15, 17, 20, 22, 24, 26, 28, 29, 31, 33, 35],
+        "green": [0, -1]}  # -1 is used to simulate 00, -1 or 0 are a guaranteed loss when betting red/black
 
 def play_roulette(color):
     """
@@ -14,26 +19,12 @@ def play_roulette(color):
     Output: True if the player wins, False indicates a loss
     """
 
-    wheel = {
-        "red": [1, 3, 5, 7, 9, 12, 14, 16, 18, 19, 21, 23, 25, 27, 30, 32, 34, 36],
-        "black": [2, 4, 6, 8, 10, 11, 13, 15, 17, 20, 22, 24, 26, 28, 29, 31, 33, 35],
-        "green": [0, -1]}  # -1 is used to simulate 00, -1 or 0 are a guaranteed loss when betting red/black
-
     ball = random.randint(-1, 37)  # Where is the ball going to land?!
 
-    if ball in wheel[color]:  # did the ball number match the color of the bet?
+    if ball in WHEEL[color]:  # did the ball number match the color of the bet?
         return True  # winner!
     else:
         return False  # loser :(
-
-def calculate_bet(starting_bet, losing_streak, life_savings):
-
-    bet = starting_bet * (2**losing_streak)         # bet grows exponentially to losing streak
-
-    if bet > life_savings:                          # we don't allow credit at this casino
-        bet = life_savings
-    return bet
-
 
 def play_game():
     """
@@ -54,10 +45,12 @@ def play_game():
     largest_bet = starting_bet
 
     while life_savings > 0:
-        current_bet = calculate_bet(starting_bet, losing_streak, life_savings)
 
-        if current_bet > largest_bet:
-            largest_bet = current_bet
+        # bet grows exponentially to losing streak
+        # min, because we don't allow credit at this casino
+        current_bet = min(life_savings, starting_bet * (2**losing_streak))
+        largest_bet = max(current_bet, largest_bet)
+
         if play_roulette(color):  # You win!
             life_savings += current_bet
             losing_streak = 0
@@ -67,7 +60,8 @@ def play_game():
 
         game_number += 1
 
-        if game_number % 10000 == 0:
+        # every million rounds, print out how much money they're making!
+        if game_number % 1000000 == 0:
             print("round number {}; life savings {}; largest bet so far: {}".format(
                 game_number, life_savings, largest_bet))
 
