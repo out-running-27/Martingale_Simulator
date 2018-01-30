@@ -26,19 +26,12 @@ def play_roulette(color):
     else:
         return False  # loser :(
 
-def play_game():
+def play_game(starting_bet, life_savings, walk_away, color):
     """
     The player will get to signify the starting cash,
     :return:
     """
-
-    print("Welcome to the Martingale Simulator!")
-    starting_bet = int(input("How much would you like your starting bet to be?: "))
-    life_savings = int(input("What is your current life savings? Don't worry, there's only a very small chance "
-                             "you'll lose it all: "))
-    color = input("Which color would you like to bet on? (black/red): ").lower()
-    # desired_winnings = int(input("How much money would you like to win?: "))
-
+    
     game_number = 0
     losing_streak = 0
     current_bet = starting_bet
@@ -59,15 +52,45 @@ def play_game():
             losing_streak += 1
 
         game_number += 1
-
+        
+        if life_savings > walk_away:
+            print("Congradulations! You walked away in round {} "
+                  "the largest bet you made this round was ${}"
+                  .format(game_number, largest_bet))
+            return life_savings
         # every million rounds, print out how much money they're making!
-        if game_number % 1000000 == 0:
+        if game_number % 100 == 0:
             print("round number {}; life savings {}; largest bet so far: {}".format(
                 game_number, life_savings, largest_bet))
+
 
     print("Oh no you lost it all on round {}, with a bet of ${} "
           "after a losing streak of {}, the largest bet you made was ${}"
           .format(game_number, current_bet, losing_streak, largest_bet))
 
+    return life_savings
+def start():
+    
+    print("Welcome to the Martingale Simulator!")
+    starting_bet = float(input("How much would you like your starting bet to be?: "))
+    life_savings = float(input("What is your current life savings? Don't worry, there's only a very small chance "
+                             "you'll lose it all: "))
+    desired_winnings = float(input("How much money would you like to win?: "))
+    color = input("Which color would you like to bet on? (black/red): ").lower()
 
-play_game()
+    
+    life_savings = play_game(starting_bet, life_savings, life_savings + desired_winnings, color)
+    
+    while life_savings != 0:
+         print("Nice job your life savings is now {}".format(life_savings))
+         play = input("would you like to play again? [Y/n]: ").lower()
+         if play == 'n':
+             break
+         else:
+             starting_bet = float(input("How much would you like your starting bet to be?: "))
+             desired_winnings = float(input("How much money would you like to win?: "))
+             color = input("Which color would you like to bet on? (black/red): ").lower()
+             life_savings = play_game(starting_bet, life_savings, life_savings + desired_winnings, color)
+         
+
+start()
