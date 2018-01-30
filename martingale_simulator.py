@@ -53,7 +53,7 @@ def play_game(starting_bet, life_savings, walk_away, color):
 
         game_number += 1
         
-        if life_savings > walk_away:
+        if life_savings >= walk_away:
             print("Congratulations! You walked away in round {} "
                   "the largest bet you made this round was ${}"
                   .format(game_number, largest_bet))
